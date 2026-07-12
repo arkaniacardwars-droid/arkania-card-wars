@@ -7,7 +7,7 @@
 <script>
 	import * as Cards from '$lib/game/cards.js';
 
-	let { carta, extra = '', onclick = null } = $props();
+	let { carta, extra = '', onclick = null, style = '' } = $props();
 
 	const arte = $derived(Cards.urlArte(carta));
 	let semArte = $state(false);
@@ -24,6 +24,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	class={Cards.classes(carta, extra)}
+	{style}
 	role={onclick ? 'button' : undefined}
 	tabindex={onclick ? 0 : undefined}
 	{onclick}
