@@ -12,13 +12,15 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"mc": "node prototype/test/mc.js"
+		"mc": "node prototype/test/mc.js",
+		"db:push": "node scripts/db-push.mjs"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-vercel": "^6.3.4",
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@types/canvas-confetti": "^1.9.0",
+		"pg": "^8.22.0",
 		"svelte": "^5.56.1",
 		"svelte-check": "^4.6.0",
 		"typescript": "^6.0.3",
