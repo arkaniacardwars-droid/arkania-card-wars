@@ -8,10 +8,12 @@
 	import { onMount } from 'svelte';
 	import * as Cards from '$lib/game/cards.js';
 	import { decksStore } from '$lib/game/decks.svelte.js';
+	import { perfilStore } from '$lib/game/perfil.svelte.js';
 	import { ui } from '$lib/game/ui.svelte.js';
 	import Carta from './Carta.svelte';
+	import Avatar from './Avatar.svelte';
 
-	let { onAbrirDeck, onStart, nomeJogador = 'Duelista' } = $props();
+	let { onAbrirDeck, onStart } = $props();
 
 	// ---- palco central: carrossel (conveyor) das cartas do DECK ativo ----
 	const FALLBACK = ['guardiao-saturno', 'mago-negro', 'kassandra'];
@@ -338,11 +340,22 @@
 	<!-- topo-centro: logo -->
 	<img class="lb-marca-img" src="/assets/backgrounds/lobby/logo-arkania.webp" alt="Arkania Card Wars" />
 
-	<!-- topo-esq: perfil -->
-	<div class="lb-perfil">
-		<div class="lb-perfil-av">🛡️</div>
+	<!-- topo-esq: perfil (clicável → abre o modal de perfil) -->
+	<div
+		class="lb-perfil clicavel"
+		role="button"
+		tabindex="0"
+		onclick={() => ui.abrirPerfil()}
+		onkeydown={(e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				ui.abrirPerfil();
+			}
+		}}
+	>
+		<div class="lb-perfil-av"><Avatar foto={perfilStore.foto} /></div>
 		<div class="lb-perfil-info">
-			<div class="lb-perfil-nome">{nomeJogador} <span class="nv">Nv.7</span></div>
+			<div class="lb-perfil-nome">{perfilStore.nome} <span class="nv">Nv.7</span></div>
 			<div class="lb-perfil-xp"><i></i></div>
 			<div class="lb-perfil-xp-txt">1 240 / 2 000 XP</div>
 		</div>

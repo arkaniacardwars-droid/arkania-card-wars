@@ -2,13 +2,11 @@
 	import Lobby from '$lib/components/Lobby.svelte';
 	import DeckBuilder from '$lib/components/DeckBuilder.svelte';
 	import CartaModal from '$lib/components/CartaModal.svelte';
-
-	let { data } = $props();
+	import PerfilModal from '$lib/components/PerfilModal.svelte';
+	import { ui } from '$lib/game/ui.svelte.js';
 
 	// navegação entre telas (SPA, como no protótipo): 'lobby' | 'colecao'
 	let view = $state('lobby');
-
-	const nomeJogador = $derived(data.user?.email?.split('@')[0] ?? 'Duelista');
 
 	function start() {
 		alert(
@@ -22,9 +20,12 @@
 </svelte:head>
 
 {#if view === 'lobby'}
-	<Lobby {nomeJogador} onAbrirDeck={() => (view = 'colecao')} onStart={start} />
+	<Lobby onAbrirDeck={() => (view = 'colecao')} onStart={start} />
 {:else}
 	<DeckBuilder onVoltar={() => (view = 'lobby')} />
 {/if}
 
 <CartaModal />
+{#if ui.perfilAberto}
+	<PerfilModal />
+{/if}
