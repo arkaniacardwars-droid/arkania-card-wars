@@ -1,6 +1,8 @@
 <script lang="ts">
 	import '../app.css';
 	import '$lib/game/theme.css';
+	// aplica os ajustes de carta salvos no admin (banco local) em todo o jogo
+	import '$lib/game/store.svelte.js';
 	import favicon from '$lib/assets/favicon.svg';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';

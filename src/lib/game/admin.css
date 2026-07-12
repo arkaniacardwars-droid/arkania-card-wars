@@ -1,0 +1,62 @@
+/* Arkania — painel admin (usa as variáveis/tema do style.css) */
+.admin-body { position: fixed; inset: 0; overflow-y: auto; z-index: 1; background: radial-gradient(ellipse at 50% 0%, #1a140b, #0b0805 70%); }
+
+.adm-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--ouro-esc); background: rgba(10,7,4,.6); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(4px); }
+.adm-marca { font-family: var(--medieval); font-size: 26px; color: var(--ouro); letter-spacing: 1px; }
+.adm-marca small { font-family: var(--serifa); font-size: 15px; color: var(--texto-suave); letter-spacing: .5px; }
+.adm-top-acoes { display: flex; gap: 10px; }
+.adm-top-acoes .btn { font-size: 13px; padding: 8px 14px; text-decoration: none; }
+
+.adm-aviso { margin: 14px 24px 0; padding: 10px 16px; font-size: 13px; color: var(--texto-suave); background: rgba(212,175,55,.08); border: 1px solid var(--ouro-esc); border-radius: 8px; }
+.adm-aviso b { color: var(--texto); }
+
+.adm-main { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px 24px 48px; align-items: start; }
+
+/* lista de cartas */
+.adm-lista { display: flex; flex-direction: column; gap: 6px; max-height: 78vh; overflow-y: auto; padding-right: 6px; }
+.adm-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; cursor: pointer; border: 1px solid transparent; border-radius: 10px; background: rgba(255,255,255,.02); color: var(--texto); text-align: left; font-family: var(--serifa); }
+.adm-item:hover { border-color: var(--bronze); background: rgba(255,255,255,.05); }
+.adm-item.sel { border-color: var(--ouro); background: rgba(212,175,55,.12); }
+.adm-item .adm-item-nota { font-family: var(--serifa); font-weight: 800; color: var(--ouro); min-width: 26px; text-align: center; }
+.adm-item .adm-item-nome { flex: 1; font-size: 14px; }
+.adm-item .adm-item-tipo { font-size: 10px; letter-spacing: 1px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--bronze); color: var(--texto-suave); }
+.adm-item.t-SUPP .adm-item-tipo { color: #7bd0ff; border-color: #3d6a86; }
+
+/* editor */
+.adm-editor { min-height: 300px; }
+.adm-vazio { color: var(--texto-suave); font-family: var(--serifa); padding: 40px; text-align: center; }
+.adm-form-grid { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
+
+.adm-preview { position: sticky; top: 90px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.adm-preview-carta .carta { width: 280px; height: 399px; cursor: default; }
+.adm-preview-carta .carta:hover { transform: none; }
+.adm-nota { font-family: var(--serifa); color: var(--texto-suave); font-size: 15px; }
+.adm-nota b { color: var(--ouro); font-size: 20px; }
+
+.adm-campos { display: flex; flex-direction: column; gap: 16px; }
+.adm-dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.adm-campo { display: flex; flex-direction: column; gap: 5px; }
+.adm-campo > span { font-family: var(--serifa); font-size: 13px; color: var(--texto-suave); letter-spacing: .5px; }
+.adm-campo input[type=text], .adm-campo select, .adm-campo textarea {
+  font-family: var(--sans); font-size: 15px; color: var(--texto);
+  background: rgba(0,0,0,.35); border: 1px solid var(--bronze); border-radius: 8px; padding: 10px 12px; outline: none;
+}
+.adm-campo input:focus, .adm-campo select:focus, .adm-campo textarea:focus { border-color: var(--ouro); }
+.adm-campo textarea { resize: vertical; }
+
+/* sliders de stats */
+.adm-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 22px; }
+.adm-stat { display: flex; flex-direction: column; gap: 4px; }
+.adm-stat-top { display: flex; justify-content: space-between; align-items: baseline; }
+.adm-stat-top label { font-family: var(--serifa); font-size: 14px; color: var(--texto); }
+.adm-stat-top b { font-family: var(--serifa); font-size: 17px; color: var(--ouro); min-width: 28px; text-align: right; }
+.adm-stat input[type=range] { width: 100%; accent-color: var(--ouro); }
+
+.adm-form-acoes { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.adm-ok { color: #7bf0a8; font-family: var(--serifa); }
+
+@media (max-width: 1080px) {
+  .adm-main { grid-template-columns: 1fr; }
+  .adm-form-grid { grid-template-columns: 1fr; }
+  .adm-preview { position: static; }
+}
