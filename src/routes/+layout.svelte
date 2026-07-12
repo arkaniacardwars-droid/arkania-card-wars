@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import '$lib/game/theme.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
