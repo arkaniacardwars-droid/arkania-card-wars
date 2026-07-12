@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arkania — Painel Admin</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body class="admin-body">
+  <header class="adm-top">
+    <div class="adm-marca">ARKANIA <small>· Painel Admin</small></div>
+    <div class="adm-top-acoes">
+      <a class="btn" href="index.html">‹ Voltar ao jogo</a>
+      <button class="btn" id="adm-exportar">⤓ Exportar JSON</button>
+      <button class="btn" id="adm-reset-tudo">↺ Resetar tudo</button>
+    </div>
+  </header>
+
+  <div class="adm-aviso" id="adm-aviso">
+    As alterações salvam no <b>banco local</b> (este navegador) e já valem no jogo.
+    Para valer <b>online, pra todos</b>, plugamos o backend depois — a camada de dados já está pronta pra isso.
+  </div>
+
+  <main class="adm-main">
+    <!-- lista de cartas -->
+    <aside class="adm-lista" id="adm-lista"></aside>
+
+    <!-- editor -->
+    <section class="adm-editor" id="adm-editor">
+      <div class="adm-vazio" id="adm-vazio">← Selecione uma carta para editar.</div>
+
+      <form class="adm-form oculto" id="adm-form">
+        <div class="adm-form-grid">
+          <!-- preview -->
+          <div class="adm-preview">
+            <div class="adm-preview-carta" id="adm-preview"></div>
+            <div class="adm-nota">Nota (média): <b id="adm-nota">–</b></div>
+          </div>
+
+          <!-- campos -->
+          <div class="adm-campos">
+            <label class="adm-campo">
+              <span>Nome</span>
+              <input type="text" id="f-nome" maxlength="28" />
+            </label>
+
+            <div class="adm-dupla">
+              <label class="adm-campo">
+                <span>Tipo</span>
+                <select id="f-tipo">
+                  <option value="HERO">HERO — Herói</option>
+                  <option value="SUPP">SUPP — Suporte</option>
+                </select>
+              </label>
+              <label class="adm-campo">
+                <span>Raridade</span>
+                <select id="f-raridade"></select>
+              </label>
+            </div>
+
+            <div class="adm-stats" id="adm-stats"></div>
+
+            <label class="adm-campo">
+              <span>Habilidades (uma por linha)</span>
+              <textarea id="f-habs" rows="4" placeholder="Ex.: Ao entrar, cura 5 de vida do aliado."></textarea>
+            </label>
+
+            <div class="adm-form-acoes">
+              <button type="submit" class="btn btn-ouro" id="f-salvar">Salvar</button>
+              <button type="button" class="btn" id="f-reset">Reverter ao padrão</button>
+              <span class="adm-ok oculto" id="adm-ok">✓ Salvo</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/engine.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

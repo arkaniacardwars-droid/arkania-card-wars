@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Arkania Card Wars — Arena de Duelos</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- cenário atmosférico (Canvas) -->
+  <canvas id="backdrop"></canvas>
+
+  <!-- ============ LOBBY (redesenhado: HUD de cantos + background de dragão) ============ -->
+  <section id="tela-lobby" class="tela ativa">
+
+    <!-- fundo do lobby em CAMADAS (cada dragão anima separado).
+         Solte as camadas em assets/backgrounds/lobby/ (ver README de lá).
+         Sem elas, cai no bg-dragoes.webp (imagem única) automaticamente. -->
+    <div id="lobby-bg">
+      <div class="bg-cena"></div>
+      <!-- vermelho de fundo (backdrop) → preto no canto esq, branco no canto dir -->
+      <div class="bg-dragao-wrap" data-par="4">
+        <img class="bg-dragao d-vermelho" src="assets/backgrounds/lobby/dragao-vermelho.png" alt="" onerror="this.style.display='none'">
+      </div>
+      <div class="bg-dragao-wrap" data-par="10">
+        <img class="bg-dragao d-preto" src="assets/backgrounds/lobby/dragao-preto.png" alt="" onerror="this.style.display='none'">
+      </div>
+      <div class="bg-dragao-wrap" data-par="11">
+        <img class="bg-dragao d-branco" src="assets/backgrounds/lobby/dragao-branco.png" alt="" onerror="this.style.display='none'">
+      </div>
+      <div class="bg-dragao-wrap" data-par="16">
+        <img class="bg-dragao d-frente" src="assets/backgrounds/lobby/frente.png" alt="" onerror="this.style.display='none'">
+      </div>
+    </div>
+    <!-- efeitos atmosféricos do lobby (brasas subindo) -->
+    <canvas id="lobby-fx"></canvas>
+
+    <!-- topo-centro: logo do jogo -->
+    <img class="lb-marca-img" src="assets/backgrounds/lobby/logo-arkania.webp" alt="Arkania Card Wars">
+
+
+    <!-- canto superior-esquerdo: perfil (maior) -->
+    <div class="lb-perfil">
+      <div class="lb-perfil-av">🛡️</div>
+      <div class="lb-perfil-info">
+        <div class="lb-perfil-nome">Duelista <span class="nv">Nv.7</span></div>
+        <div class="lb-perfil-xp"><i></i></div>
+        <div class="lb-perfil-xp-txt">1 240 / 2 000 XP</div>
+      </div>
+    </div>
+
+    <!-- canto superior-direito: recursos (maiores) -->
+    <div class="lb-recursos">
+      <span class="lb-rec"><span class="ic">🪙</span><b>1 250</b></span>
+      <span class="lb-rec"><span class="ic">💎</span><b>0</b></span>
+      <button class="lb-rec-add" title="Comprar">+</button>
+    </div>
+
+    <!-- meio da lateral direita: Deck / Conquistas / Missões / Loja (empilhados) -->
+    <div class="lb-menu-lat">
+      <button class="lb-menu-btn" data-aba="colecao"><span class="ic">🃏</span><span class="lbl">Deck</span></button>
+      <button class="lb-menu-btn" data-aba="conquistas"><span class="ic">🏆</span><span class="lbl">Conquistas</span></button>
+      <button class="lb-menu-btn" data-aba="missoes"><span class="ic">🎯</span><span class="lbl">Missões</span></button>
+      <button class="lb-menu-btn" data-aba="loja"><span class="ic">🛒</span><span class="lbl">Loja</span></button>
+    </div>
+
+    <!-- centro: cartas em destaque (centralizadas) -->
+    <div class="lb-palco">
+      <div class="heroi-cartas" id="palco-cartas"></div>
+      <div class="heroi-nome" id="heroi-nome">Campeão<small>Duelista Lendário</small></div>
+    </div>
+
+    <!-- canto inferior-esquerdo: START -->
+    <button class="start-btn" id="btn-start">START</button>
+
+    <!-- canto inferior-direito: Battle Pass -->
+    <button class="lb-battlepass" id="btn-battlepass">
+      <canvas class="bp-fogo" id="bp-fogo-cv" aria-hidden="true"></canvas>
+      <span class="bp-ic">🎟️</span>
+      <span class="bp-txt">
+        <b>Battle Pass</b>
+        <small>Temporada I · Nv.7</small>
+        <span class="bp-barra"><i></i></span>
+      </span>
+    </button>
+  </section>
+
+  <!-- ============ MODAL JOGAR ============ -->
+  <div class="modal-fundo" id="modal-jogar">
+    <div class="modal moldura">
+      <h2>Escolha seu Duelo</h2>
+      <p class="sub">Três caminhos para a arena.</p>
+      <div class="opcoes">
+        <div class="opcao" id="op-fila">
+          <div class="ico">🎯</div>
+          <div class="tit">Encontrar Adversário</div>
+          <div class="txt">Entra na fila e enfrenta um oponente à altura.</div>
+          <span class="tag">JOGÁVEL</span>
+        </div>
+        <div class="opcao" id="op-salas">
+          <div class="ico">📜</div>
+          <div class="tit">Lista de Duelos</div>
+          <div class="txt">Salas abertas esperando um desafiante.</div>
+          <span class="tag">ONLINE (em breve)</span>
+        </div>
+        <div class="opcao" id="op-convite">
+          <div class="ico">🤝</div>
+          <div class="tit">Chamar para Confronto</div>
+          <div class="txt">Convide um rival direto para o duelo.</div>
+          <span class="tag">ONLINE (em breve)</span>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:18px;">
+        <button class="btn" id="op-aposta" style="border-color:var(--for)">⚔ Duelar em Modo Aposta (carta em jogo)</button>
+      </div>
+      <button class="btn fechar" id="modal-fechar">Voltar</button>
+    </div>
+  </div>
+
+  <!-- ============ DUELO ============ -->
+  <section id="tela-duel" class="tela">
+    <div class="duel-top">
+      <button class="btn" id="btn-sair-duelo">‹ Sair</button>
+      <div class="titulo">Arena de Duelos</div>
+      <span class="badge-modo" id="badge-modo-duelo">Duelo Amistoso</span>
+    </div>
+
+    <!-- PLAYMAT top-down (arena de cartas) -->
+    <div class="playmat">
+      <!-- efeitos passando na arena -->
+      <div class="arena-fx" aria-hidden="true">
+        <div class="grid-glow"></div>
+        <span class="beam b1"></span><span class="beam b2"></span><span class="beam b3"></span>
+        <div class="ring"></div><div class="ring r2"></div>
+      </div>
+
+      <!-- lado do ADVERSÁRIO (topo) -->
+      <div class="lado-mat op">
+        <div class="mat-hud op">
+          <div class="avatar">🗿</div>
+          <div class="info-jog">
+            <div class="nome" id="op-nome">Adversário</div>
+            <div class="barra-vida"><i id="op-vida-bar"></i><span id="op-vida-txt">80 / 80</span></div>
+            <div class="barra-ene"><i id="op-ene-bar"></i><span id="op-ene-txt">ENE 30</span></div>
+          </div>
+          <div class="papel-tag" id="op-papel"></div>
+        </div>
+        <div class="mat-zonas">
+          <div class="zona deck"><div class="zona-slot" id="op-deck"></div><div class="zona-rotulo">Deck</div></div>
+          <div class="zona ataque"><div class="zona-slot" id="op-ataque"></div><div class="zona-rotulo">Ataque</div></div>
+          <div class="zona descarte"><div class="zona-slot" id="op-descarte"></div><div class="zona-rotulo">Descarte</div></div>
+        </div>
+      </div>
+
+      <!-- CENTRO da arena -->
+      <div class="mat-centro">
+        <div class="linha-batalha"></div>
+        <div class="contador-rodada" id="contador-rodada">PREPARAÇÃO</div>
+        <div class="reveal" id="reveal"></div>
+        <div class="log-combate" id="log-combate">Escolha seu campeão.</div>
+      </div>
+
+      <!-- lado do JOGADOR (base) -->
+      <div class="lado-mat eu">
+        <div class="mat-zonas">
+          <div class="zona descarte"><div class="zona-slot" id="me-descarte"></div><div class="zona-rotulo">Descarte</div></div>
+          <div class="zona ataque"><div class="zona-slot" id="me-ataque"></div><div class="zona-rotulo">Ataque</div></div>
+          <div class="zona deck"><div class="zona-slot" id="me-deck"></div><div class="zona-rotulo">Deck</div></div>
+        </div>
+        <div class="mat-hud eu">
+          <div class="avatar">🛡️</div>
+          <div class="info-jog">
+            <div class="nome" id="me-nome">Você</div>
+            <div class="barra-vida"><i id="me-vida-bar"></i><span id="me-vida-txt">80 / 80</span></div>
+            <div class="barra-ene"><i id="me-ene-bar"></i><span id="me-ene-txt">ENE 30</span></div>
+          </div>
+          <div class="papel-tag" id="me-papel"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BARRA DE COMANDO dinâmica (escolha de campeão → atacar/defender) -->
+    <div class="comando-barra" id="comando-din"></div>
+  </section>
+
+  <!-- ============ DECK / CONSTRUTOR + CATÁLOGO ============ -->
+  <section id="tela-colecao" class="tela">
+    <div class="col-top">
+      <button class="btn" id="btn-col-voltar">‹ Voltar</button>
+      <div class="titulo">Construtor de Deck</div>
+      <div class="col-contagem" id="col-contagem"></div>
+    </div>
+    <div class="col-corpo">
+      <!-- 5 slots pra montar 5 decks diferentes -->
+      <div class="deck-slots" id="deck-slots"></div>
+
+      <!-- meu deck: 12 cartas (maiores) -->
+      <div class="deck-titulo">Meu Deck <span class="deck-cont" id="deck-cont">0 / 8</span></div>
+      <div class="deck-grid" id="deck-grid"></div>
+
+      <!-- coleção disponível: toque pra adicionar ao deck -->
+      <div class="deck-sub">Coleção — toque numa carta pra adicionar</div>
+      <div class="col-filtro-barra">
+        <div class="col-filtros" id="col-filtros"></div>
+        <button class="col-ordenar" id="btn-col-ordenar">⇅ A–Z</button>
+      </div>
+      <div class="col-grid" id="col-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ MODAL DETALHE DA CARTA (glassmorphism) ============ -->
+  <div class="carta-modal-fundo" id="carta-modal">
+    <div class="cm-glass">
+      <button class="cm-fechar" id="cm-fechar" aria-label="Fechar">✕</button>
+      <div class="cm-esq">
+        <div class="cm-carta" id="cm-carta"></div>
+      </div>
+      <div class="cm-dir">
+        <div class="cm-cabecalho">
+          <div class="cm-nota"><b id="cm-nota-num">94</b><span id="cm-nota-tipo">HERO</span></div>
+          <div class="cm-titulo">
+            <h2 class="cm-nome" id="cm-nome">Carta</h2>
+            <div class="cm-rar" id="cm-rar">◆ Raridade</div>
+          </div>
+        </div>
+        <div class="cm-attrs" id="cm-attrs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL PERFIL ============ -->
+  <div class="carta-modal-fundo perfil-fundo" id="perfil-modal">
+    <div class="cm-glass pf-glass">
+      <button class="cm-fechar" id="pf-fechar" aria-label="Fechar">✕</button>
+
+      <!-- coluna esquerda: identidade + bio + salvar -->
+      <div class="pf-col-id">
+        <div class="pf-av-wrap">
+          <div class="pf-av" id="pf-av"></div>
+          <!-- nível: mesma bandeirinha (nota) das cartas, com o nível do jogador -->
+          <span class="pf-nivel"><small>NÍVEL</small><b>7</b></span>
+        </div>
+        <input id="pf-nome-input" class="pf-nome-input" maxlength="20" placeholder="Seu nome" aria-label="Nome de usuário">
+        <div class="pf-membro" id="pf-membro"></div>
+        <label class="pf-bio-lbl">Bio</label>
+        <textarea class="pf-bio" id="pf-bio" maxlength="240" rows="4"
+          placeholder="Escreva sua bio de duelista…"></textarea>
+        <button class="btn btn-ouro pf-salvar" id="pf-salvar">Salvar perfil</button>
+        <div class="pf-salvo" id="pf-salvo"></div>
+      </div>
+
+      <!-- coluna direita: estatísticas + cartas mais usadas + foto de perfil -->
+      <div class="pf-col-dados">
+        <div class="pf-stats" id="pf-stats"></div>
+
+        <div class="pf-secao">
+          <h3>Cartas mais usadas</h3>
+          <div class="pf-top" id="pf-top"></div>
+        </div>
+
+        <div class="pf-secao">
+          <h3>Foto de perfil <small>escolha um personagem</small></h3>
+          <div class="pf-avatares" id="pf-avatares"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FIM DE JOGO ============ -->
+  <div class="fim-fundo" id="fim-fundo">
+    <div class="fim-card moldura">
+      <h1 id="fim-titulo" class="venceu">Vitória!</h1>
+      <p id="fim-sub">A arena é sua, duelista.</p>
+      <button class="btn btn-ouro" id="btn-revanche">Revanche ⚔</button>
+      <button class="btn" id="btn-lobby-fim" style="margin-top:10px">Voltar ao Lobby</button>
+    </div>
+  </div>
+
+  <!-- scripts clássicos, sem build. Ordem importa. -->
+  <script src="js/engine.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/perfil.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/backdrop.js"></script>
+  <script src="js/lobbyfx.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/lobby.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+/*
+ * Base global do Arkania Card Wars.
+ * Open Props está instalado (design tokens). Ao portar o tema imperial de
+ * prototype/css/style.css, importe os tokens aqui com:
+ *   @import '../node_modules/open-props/open-props.min.css';
+ * (o pacote não expõe subpath CSS no `exports`, então o caminho relativo é o
+ *  jeito confiável no Vite).
+ */
+:root {
+	color-scheme: dark;
+	--ak-bg: #14100b;
+	--ak-ouro: #d4af37;
+	--ak-texto: #f0e6d2;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	min-height: 100dvh;
+	background: radial-gradient(1200px 800px at 50% -10%, #241c12, var(--ak-bg));
+	color: var(--ak-texto);
+	font-family: 'Trajan Pro', 'Cinzel', Georgia, 'Times New Roman', serif;
+	-webkit-font-smoothing: antialiased;
+}
