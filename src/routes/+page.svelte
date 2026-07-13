@@ -7,13 +7,15 @@
 	import PerfilModal from '$lib/components/PerfilModal.svelte';
 	import { ui } from '$lib/game/ui.svelte.js';
 	import { perfilStore } from '$lib/game/perfil.svelte.js';
+	import { decksStore } from '$lib/game/decks.svelte.js';
 
 	let { data } = $props();
 
-	// hidrata o perfil (do Supabase, carregado no server) no client + dá acesso
-	// ao cliente Supabase para as mutações. Re-roda quando `data` muda (invalidate).
+	// hidrata perfil + decks/posse (do Supabase, carregados no server) no client e
+	// dá acesso ao cliente Supabase p/ as mutações. Só re-hidrata se o usuário mudar.
 	$effect(() => {
 		perfilStore.init(data.supabase, data.user, data.profile);
+		decksStore.init(data.supabase, data.user, data.decks, data.owned);
 	});
 
 	// navegação entre telas (SPA, como no protótipo): 'lobby' | 'colecao' | 'duelo'

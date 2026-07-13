@@ -52,11 +52,14 @@ function criar() {
 	}
 
 	return {
-		// chamado no client (+page.svelte) com o cliente Supabase + profile do server
+		// chamado no client (+page.svelte). Hidrata só quando o usuário muda.
 		init(supabase, user, row) {
 			sb = supabase;
-			uid = user?.id ?? null;
-			if (row) hidratar(row);
+			const novoUid = user?.id ?? null;
+			if (novoUid !== uid) {
+				uid = novoUid;
+				if (row) hidratar(row);
+			}
 		},
 		hidratar,
 

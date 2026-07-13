@@ -1,96 +1,69 @@
 /*
- * Estado dos decks do jogador (5 decks de até 8 cartas) + posse da coleção.
- * Porte de prototype/js/lobby.js (POSSUI + decks) para Svelte 5 runes, com
- * persistência em localStorage. Ponto único de troca localStorage → Supabase.
+ * Decks do jogador (5 slots de até 8 cartas) + posse da coleção — agora
+ * persistidos no Supabase (tabelas `decks` e `player_cards`), para o usuário
+ * logado. Fase 2 da camada online (antes era localStorage).
+ *
+ * Fluxo: `decks` e `owned` são carregados no server (+page.server.ts, que também
+ * semeia o jogador novo) e injetados via `init()` no client; mutações atualizam
+ * o estado de forma otimista e persistem via `supabase.from('decks')`.
  */
-import { browser } from '$app/environment';
 import * as Cards from './cards.js';
 
 export const DECK_MAX = 8;
 export const N_DECKS = 5;
 
-const LS_KEY = 'arkania.decks.v1';
-const LS_KEY_LEGADO = 'cardwars.decks.v1'; // pré-rebrand — migração transparente
-
-// cartas que o JOGADOR possui (protótipo: subconjunto fixo).
-// TODO: substituir por posse persistida no Supabase.
-const POSSUI = new Set([
-	'skeleton-red',
-	'nagoy',
-	'fox',
-	'taichin',
-	'kassandra',
-	'lincon-cartola',
-	'mago-negro',
-	'siberian',
-	'guardiao-saturno'
-]);
-
-function padrao() {
-	return {
-		decks: [
-			['kassandra', 'mago-negro', 'guardiao-saturno', 'fox', 'taichin', 'siberian'],
-			[],
-			[],
-			[],
-			[]
-		],
-		nomes: ['Deck 1', 'Deck 2', 'Deck 3', 'Deck 4', 'Deck 5'],
-		ativo: 0
-	};
-}
-
-function carregar() {
-	const base = padrao();
-	if (!browser) return base;
-	try {
-		let raw = localStorage.getItem(LS_KEY);
-		if (!raw) {
-			// migra decks salvos sob a chave antiga (cardwars.*) uma única vez
-			raw = localStorage.getItem(LS_KEY_LEGADO);
-			if (raw) {
-				localStorage.setItem(LS_KEY, raw);
-				localStorage.removeItem(LS_KEY_LEGADO);
-			}
-		}
-		if (!raw) return base;
-		const s = JSON.parse(raw);
-		if (s && Array.isArray(s.decks) && s.decks.length === N_DECKS) {
-			// valida: só ids existentes, sem duplicar, até DECK_MAX por deck
-			base.decks = s.decks.map((d) => {
-				const out = [];
-				(Array.isArray(d) ? d : []).forEach((id) => {
-					if (Cards.porId(id) && out.indexOf(id) === -1 && out.length < DECK_MAX) out.push(id);
-				});
-				return out;
-			});
-		}
-		if (s && Array.isArray(s.nomes) && s.nomes.length === N_DECKS) {
-			base.nomes = s.nomes.map((n) => String(n).slice(0, 16) || 'Deck');
-		}
-		if (s && typeof s.ativo === 'number' && s.ativo >= 0 && s.ativo < N_DECKS) base.ativo = s.ativo;
-	} catch {
-		/* dados corrompidos — ignora e usa o padrão */
-	}
-	return base;
+function nomePadrao(s) {
+	return `Deck ${s + 1}`;
 }
 
 function criar() {
-	const inicial = carregar();
-	let decks = $state(inicial.decks);
-	let nomes = $state(inicial.nomes);
-	let ativo = $state(inicial.ativo);
+	let decks = $state([[], [], [], [], []]);
+	let nomes = $state([0, 1, 2, 3, 4].map(nomePadrao));
+	let ativo = $state(0);
+	let owned = $state(new Set());
+	let sb = null; // cliente Supabase
+	let uid = null; // id do usuário logado
 
-	function salvar() {
-		if (!browser) return;
-		try {
-			localStorage.setItem(LS_KEY, JSON.stringify({ decks, nomes, ativo }));
-		} catch {
-			/* localStorage indisponível — segue só em memória */
-		}
+	function hidratar(deckRows, ownedIds) {
+		const d = [[], [], [], [], []];
+		const n = [0, 1, 2, 3, 4].map(nomePadrao);
+		let at = 0;
+		(deckRows ?? []).forEach((r) => {
+			const s = r.slot | 0;
+			if (s < 0 || s >= N_DECKS) return;
+			d[s] = Array.isArray(r.cartas) ? r.cartas.filter((id) => Cards.porId(id)).slice(0, DECK_MAX) : [];
+			n[s] = String(r.nome || nomePadrao(s)).slice(0, 16);
+			if (r.ativo) at = s;
+		});
+		decks = d;
+		nomes = n;
+		ativo = at;
+		owned = new Set(ownedIds ?? []);
+	}
+
+	// upsert do slot inteiro (cartas + nome + flag ativo)
+	async function persistirSlot(s) {
+		if (!sb || !uid) return;
+		await sb
+			.from('decks')
+			.upsert(
+				{ player_id: uid, slot: s, nome: nomes[s], cartas: decks[s], ativo: s === ativo },
+				{ onConflict: 'player_id,slot' }
+			);
 	}
 
 	return {
+		// hidrata só quando o usuário muda (evita clobber de edições ao invalidar)
+		init(supabase, user, deckRows, ownedIds) {
+			sb = supabase;
+			const novoUid = user?.id ?? null;
+			if (novoUid !== uid) {
+				uid = novoUid;
+				hidratar(deckRows, ownedIds);
+			}
+		},
+		hidratar,
+
 		get decks() {
 			return decks;
 		},
@@ -103,44 +76,48 @@ function criar() {
 		get deckAtual() {
 			return decks[ativo];
 		},
-		possui: (c) => POSSUI.has(typeof c === 'string' ? c : c.id),
+		possui: (c) => owned.has(typeof c === 'string' ? c : c.id),
 		get totalPossui() {
-			return Cards.todas().filter((c) => POSSUI.has(c.id)).length;
+			return owned.size;
 		},
 		noDeck(c) {
 			return decks[ativo].indexOf(c.id) !== -1;
 		},
-		setAtivo(i) {
-			if (i >= 0 && i < N_DECKS) {
-				ativo = i;
-				salvar();
-			}
+
+		async setAtivo(i) {
+			if (i < 0 || i >= N_DECKS || i === ativo) return;
+			ativo = i;
+			if (!sb || !uid) return;
+			await sb.from('decks').update({ ativo: false }).eq('player_id', uid);
+			await sb.from('decks').update({ ativo: true }).eq('player_id', uid).eq('slot', i);
 		},
+
 		toggle(c) {
-			if (!POSSUI.has(c.id)) return;
+			if (!owned.has(c.id)) return;
 			const d = decks[ativo];
 			const i = d.indexOf(c.id);
 			if (i !== -1) d.splice(i, 1); // já está → remove
 			else if (d.length < DECK_MAX) d.push(c.id); // tem espaço → adiciona
-			else return; // deck cheio → ignora
-			decks = [...decks]; // reatribui p/ disparar reatividade do array externo
-			salvar();
+			else return; // deck cheio
+			decks = [...decks];
+			persistirSlot(ativo);
 		},
+
 		remover(c) {
 			const d = decks[ativo];
 			const i = d.indexOf(c.id);
 			if (i === -1) return;
 			d.splice(i, 1);
 			decks = [...decks];
-			salvar();
+			persistirSlot(ativo);
 		},
+
 		renomear(i, nome) {
 			const v = String(nome).trim().slice(0, 16);
-			if (v) {
-				nomes[i] = v;
-				nomes = [...nomes];
-				salvar();
-			}
+			if (!v) return;
+			nomes[i] = v;
+			nomes = [...nomes];
+			if (sb && uid) sb.from('decks').update({ nome: v }).eq('player_id', uid).eq('slot', i);
 		}
 	};
 }
