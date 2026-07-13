@@ -4,6 +4,7 @@
   (abrir/montarStats/montarTopCartas/montarPicker/salvar) + #perfil-modal.
 -->
 <script>
+	import { invalidateAll } from '$app/navigation';
 	import * as Cards from '$lib/game/cards.js';
 	import { perfilStore, formatarData } from '$lib/game/perfil.svelte.js';
 	import { ui } from '$lib/game/ui.svelte.js';
@@ -15,6 +16,8 @@
 	let bio = $state(perfilStore.bio);
 	let pendenteFoto = $state(perfilStore.foto);
 	let salvo = $state(false);
+	let erro = $state('');
+	let salvando = $state(false);
 
 	const stats = $derived(perfilStore.stats);
 	const top = $derived(perfilStore.topCartas(3));
@@ -28,9 +31,19 @@
 	]);
 
 	let timeoutSalvo;
-	function salvar() {
-		perfilStore.salvar({ nome, foto: pendenteFoto, bio });
+	async function salvar() {
+		if (salvando) return;
+		salvando = true;
+		erro = '';
+		const r = await perfilStore.salvar({ nome, foto: pendenteFoto, bio });
+		salvando = false;
+		if (!r.ok) {
+			erro = 'Não foi possível salvar — talvez o nome de duelista já esteja em uso.';
+			nome = perfilStore.nome; // reverte ao valor atual
+			return;
+		}
 		nome = perfilStore.nome; // normaliza (vazio → Duelista)
+		await invalidateAll(); // atualiza data.profile (nome exibido no lobby)
 		salvo = true;
 		clearTimeout(timeoutSalvo);
 		timeoutSalvo = setTimeout(() => (salvo = false), 2200);
@@ -74,8 +87,12 @@
 				placeholder="Escreva sua bio de duelista…"
 				bind:value={bio}
 			></textarea>
-			<button class="btn btn-ouro pf-salvar" onclick={salvar}>Salvar perfil</button>
-			<div class="pf-salvo" class:show={salvo}>{salvo ? '✓ Perfil salvo' : ''}</div>
+			<button class="btn btn-ouro pf-salvar" onclick={salvar} disabled={salvando}>
+				{salvando ? 'Salvando…' : 'Salvar perfil'}
+			</button>
+			<div class="pf-salvo" class:show={salvo || erro} style={erro ? 'color:#ff9b8f' : ''}>
+				{erro || (salvo ? '✓ Perfil salvo' : '')}
+			</div>
 		</div>
 
 		<!-- coluna direita: estatísticas + cartas mais usadas + foto de perfil -->

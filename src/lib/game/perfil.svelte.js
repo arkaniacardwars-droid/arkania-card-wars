@@ -1,37 +1,20 @@
 /*
- * Perfil do jogador: nome, foto (id de carta), bio, data de criação, e
- * estatísticas (partidas/vitórias/derrotas + uso de cartas). Porte de
- * prototype/js/perfil.js para Svelte 5 runes, persistindo em localStorage.
- * Ponto único de troca localStorage → Supabase.
+ * Perfil do jogador — agora persistido no Supabase (tabela `profiles`), para o
+ * usuário logado. Fase 2 da camada online (antes era localStorage).
  *
- *   arkania.perfil.v1 = { nome, foto: <idCarta>|null, bio, criadoEm }
- *   arkania.stats.v1  = { partidas, vitorias, derrotas, usoCartas: { <id>: n } }
+ * Fluxo: o `profile` é carregado no server (+layout.server.ts) e injetado via
+ * `init(supabase, user, row)` no client; mutações (salvar / registrarPartida)
+ * atualizam o estado de forma otimista e persistem via `supabase.from('profiles')`.
+ *
+ * Mapa DB → estado:
+ *   username → nome · foto_card → foto · bio → bio · created_at → criadoEm
+ *   partidas/vitorias/derrotas/uso_cartas → stats
  */
-import { browser } from '$app/environment';
 import * as Cards from './cards.js';
 
-const K_PERFIL = 'arkania.perfil.v1';
-const K_STATS = 'arkania.stats.v1';
 const NOME_MAX = 20;
 const BIO_MAX = 240;
 const NOME_PADRAO = 'Duelista';
-
-function lerJSON(k, fallback) {
-	if (!browser) return fallback;
-	try {
-		return JSON.parse(localStorage.getItem(k)) || fallback;
-	} catch {
-		return fallback;
-	}
-}
-function gravarJSON(k, obj) {
-	if (!browser) return;
-	try {
-		localStorage.setItem(k, JSON.stringify(obj));
-	} catch {
-		/* indisponível — segue em memória */
-	}
-}
 
 export function formatarData(ts) {
 	if (!ts) return '';
@@ -46,37 +29,37 @@ export function formatarData(ts) {
 	}
 }
 
-function lerPerfil() {
-	const p = lerJSON(K_PERFIL, {});
-	return {
-		nome: typeof p.nome === 'string' && p.nome.trim() ? p.nome.trim().slice(0, NOME_MAX) : NOME_PADRAO,
-		foto: typeof p.foto === 'string' && Cards.porId(p.foto) ? p.foto : null,
-		bio: typeof p.bio === 'string' ? p.bio : '',
-		criadoEm: typeof p.criadoEm === 'number' ? p.criadoEm : null
-	};
-}
-
-function lerStats() {
-	const s = lerJSON(K_STATS, {});
-	return {
-		partidas: s.partidas | 0,
-		vitorias: s.vitorias | 0,
-		derrotas: s.derrotas | 0,
-		usoCartas: s.usoCartas && typeof s.usoCartas === 'object' ? s.usoCartas : {}
-	};
-}
-
 function criar() {
-	let perfil = $state(lerPerfil());
-	let stats = $state(lerStats());
+	let perfil = $state({ nome: NOME_PADRAO, foto: null, bio: '', criadoEm: null });
+	let stats = $state({ partidas: 0, vitorias: 0, derrotas: 0, usoCartas: {} });
+	let sb = null; // cliente Supabase (do +layout.ts)
+	let uid = null; // id do usuário logado
 
-	// carimba a data de criação da conta na 1ª vez (protótipo local)
-	if (browser && !perfil.criadoEm) {
-		perfil = { ...perfil, criadoEm: Date.now() };
-		gravarJSON(K_PERFIL, perfil);
+	function hidratar(row) {
+		if (!row) return;
+		perfil = {
+			nome: typeof row.username === 'string' && row.username.trim() ? row.username : NOME_PADRAO,
+			foto: typeof row.foto_card === 'string' && Cards.porId(row.foto_card) ? row.foto_card : null,
+			bio: typeof row.bio === 'string' ? row.bio : '',
+			criadoEm: row.created_at || null
+		};
+		stats = {
+			partidas: row.partidas | 0,
+			vitorias: row.vitorias | 0,
+			derrotas: row.derrotas | 0,
+			usoCartas: row.uso_cartas && typeof row.uso_cartas === 'object' ? row.uso_cartas : {}
+		};
 	}
 
 	return {
+		// chamado no client (+page.svelte) com o cliente Supabase + profile do server
+		init(supabase, user, row) {
+			sb = supabase;
+			uid = user?.id ?? null;
+			if (row) hidratar(row);
+		},
+		hidratar,
+
 		get nome() {
 			return perfil.nome;
 		},
@@ -103,28 +86,46 @@ function criar() {
 				.sort((a, b) => b.usos - a.usos)
 				.slice(0, n);
 		},
-		salvar({ nome, foto, bio }) {
-			const p = { ...perfil };
-			if (typeof nome === 'string') {
-				const n = nome.trim().slice(0, NOME_MAX);
-				p.nome = n || NOME_PADRAO;
-			}
-			p.foto = foto && Cards.porId(foto) ? foto : null;
-			if (typeof bio === 'string') p.bio = bio.trim().slice(0, BIO_MAX);
-			if (!p.criadoEm) p.criadoEm = Date.now();
-			perfil = p;
-			gravarJSON(K_PERFIL, p);
-			return p;
+
+		// salva nome/foto/bio (otimista + persiste). Retorna { ok, error }.
+		async salvar({ nome, foto, bio }) {
+			const novo = {
+				nome: String(nome ?? '').trim().slice(0, NOME_MAX) || NOME_PADRAO,
+				foto: foto && Cards.porId(foto) ? foto : null,
+				bio: String(bio ?? '').trim().slice(0, BIO_MAX),
+				criadoEm: perfil.criadoEm
+			};
+			const anterior = perfil;
+			perfil = novo; // otimista
+			if (!sb || !uid) return { ok: true };
+			const { error } = await sb
+				.from('profiles')
+				.update({ username: novo.nome, foto_card: novo.foto, bio: novo.bio })
+				.eq('id', uid);
+			if (error) perfil = anterior; // rollback (ex.: username duplicado)
+			return { ok: !error, error };
 		},
-		// chamado pelo duelo (quando portado) para registrar resultado + uso de carta
-		registrarPartida(venceu, cartaId) {
-			const s = { ...stats, usoCartas: { ...stats.usoCartas } };
-			s.partidas += 1;
-			if (venceu) s.vitorias += 1;
-			else s.derrotas += 1;
+
+		// registra o resultado de um duelo (chamado pelo Duelo ao fim da partida)
+		async registrarPartida(venceu, cartaId) {
+			const s = {
+				partidas: stats.partidas + 1,
+				vitorias: stats.vitorias + (venceu ? 1 : 0),
+				derrotas: stats.derrotas + (venceu ? 0 : 1),
+				usoCartas: { ...stats.usoCartas }
+			};
 			if (cartaId && Cards.porId(cartaId)) s.usoCartas[cartaId] = (s.usoCartas[cartaId] | 0) + 1;
 			stats = s;
-			gravarJSON(K_STATS, s);
+			if (!sb || !uid) return;
+			await sb
+				.from('profiles')
+				.update({
+					partidas: s.partidas,
+					vitorias: s.vitorias,
+					derrotas: s.derrotas,
+					uso_cartas: s.usoCartas
+				})
+				.eq('id', uid);
 		}
 	};
 }

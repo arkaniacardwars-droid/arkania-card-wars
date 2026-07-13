@@ -6,8 +6,15 @@
 	import CartaModal from '$lib/components/CartaModal.svelte';
 	import PerfilModal from '$lib/components/PerfilModal.svelte';
 	import { ui } from '$lib/game/ui.svelte.js';
+	import { perfilStore } from '$lib/game/perfil.svelte.js';
 
 	let { data } = $props();
+
+	// hidrata o perfil (do Supabase, carregado no server) no client + dá acesso
+	// ao cliente Supabase para as mutações. Re-roda quando `data` muda (invalidate).
+	$effect(() => {
+		perfilStore.init(data.supabase, data.user, data.profile);
+	});
 
 	// navegação entre telas (SPA, como no protótipo): 'lobby' | 'colecao' | 'duelo'
 	let view = $state('lobby');
