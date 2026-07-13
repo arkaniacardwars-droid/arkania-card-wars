@@ -13,7 +13,8 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"mc": "node prototype/test/mc.js",
-		"db:push": "node scripts/db-push.mjs"
+		"db:push": "node scripts/db-push.mjs",
+		"cartas": "node scripts/sync-cartas.mjs"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-vercel": "^6.3.4",

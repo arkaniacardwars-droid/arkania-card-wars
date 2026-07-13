@@ -1,0 +1,522 @@
+[
+  {
+    "id": "skeleton-red",
+    "base": "skeleton",
+    "nome": "Skeleton Red",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "💀",
+    "arte": true,
+    "stats": {
+      "ATA": 80,
+      "DEF": 65,
+      "FOR": 76,
+      "VEL": 71,
+      "ENE": 52,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "nagoy",
+    "base": "nagoy",
+    "nome": "Nagoy",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "👤",
+    "arte": true,
+    "stats": {
+      "ATA": 80,
+      "DEF": 65,
+      "FOR": 82,
+      "VEL": 65,
+      "ENE": 52,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "dragao-de-fogo",
+    "base": "dragao",
+    "nome": "Dragão de Fogo",
+    "variante": "Fogo",
+    "raridade": "epico",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🐉",
+    "arte": true,
+    "stats": {
+      "ATA": 95,
+      "DEF": 65,
+      "FOR": 88,
+      "VEL": 71,
+      "ENE": 52,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "urso-cyborg",
+    "base": "urso",
+    "nome": "Urso Cyborg",
+    "variante": "Padrão",
+    "raridade": "epico",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🐻",
+    "arte": true,
+    "stats": {
+      "ATA": 95,
+      "DEF": 77,
+      "FOR": 88,
+      "VEL": 59,
+      "ENE": 52,
+      "VID": 76
+    },
+    "habilidades": []
+  },
+  {
+    "id": "fox",
+    "base": "fox",
+    "nome": "Fox Cyborg",
+    "variante": "Padrão",
+    "raridade": "incomum",
+    "tipo": "HERO",
+    "dom": "VEL",
+    "emoji": "🦊",
+    "arte": true,
+    "stats": {
+      "ATA": 70,
+      "DEF": 59,
+      "FOR": 58,
+      "VEL": 85,
+      "ENE": 58,
+      "VID": 64
+    },
+    "habilidades": []
+  },
+  {
+    "id": "skeleton-red-1",
+    "base": "skeleton",
+    "nome": "Esqueleto Ceifador",
+    "variante": "Ceifador",
+    "raridade": "incomum",
+    "tipo": "HERO",
+    "dom": "VEL",
+    "emoji": "☠️",
+    "arte": true,
+    "stats": {
+      "ATA": 76,
+      "DEF": 59,
+      "FOR": 64,
+      "VEL": 85,
+      "ENE": 52,
+      "VID": 64
+    },
+    "habilidades": []
+  },
+  {
+    "id": "taichin",
+    "base": "taichin",
+    "nome": "Taichin",
+    "variante": "Padrão",
+    "raridade": "raro",
+    "tipo": "HERO",
+    "dom": "VEL",
+    "emoji": "🥋",
+    "arte": true,
+    "stats": {
+      "ATA": 70,
+      "DEF": 53,
+      "FOR": 58,
+      "VEL": 90,
+      "ENE": 64,
+      "VID": 60
+    },
+    "habilidades": []
+  },
+  {
+    "id": "kassandra",
+    "base": "kassandra",
+    "nome": "Kassandra",
+    "variante": "Padrão",
+    "raridade": "epico",
+    "tipo": "HERO",
+    "dom": "VEL",
+    "emoji": "⚔️",
+    "arte": true,
+    "stats": {
+      "ATA": 76,
+      "DEF": 59,
+      "FOR": 64,
+      "VEL": 95,
+      "ENE": 58,
+      "VID": 64
+    },
+    "habilidades": []
+  },
+  {
+    "id": "lincon-cartola",
+    "base": "lincon",
+    "nome": "Lincon Cartola",
+    "variante": "Padrão",
+    "raridade": "incomum",
+    "tipo": "SUPP",
+    "dom": "INT",
+    "emoji": "🎩",
+    "arte": true,
+    "stats": {
+      "ATA": 58,
+      "DEF": 65,
+      "FOR": 46,
+      "VEL": 65,
+      "ENE": 85,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "eringes",
+    "base": "eringes",
+    "nome": "Eringes",
+    "variante": "Padrão",
+    "raridade": "raro",
+    "tipo": "SUPP",
+    "dom": "INT",
+    "emoji": "✨",
+    "arte": true,
+    "stats": {
+      "ATA": 64,
+      "DEF": 65,
+      "FOR": 52,
+      "VEL": 59,
+      "ENE": 90,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "mago-negro",
+    "base": "mago",
+    "nome": "Mago Negro",
+    "variante": "Padrão",
+    "raridade": "lendario",
+    "tipo": "HERO",
+    "dom": "INT",
+    "emoji": "🧙",
+    "arte": true,
+    "stats": {
+      "ATA": 58,
+      "DEF": 65,
+      "FOR": 46,
+      "VEL": 65,
+      "ENE": 99,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "dragao-branco",
+    "base": "dragao",
+    "nome": "Dragão Branco",
+    "variante": "Branco",
+    "raridade": "lendario",
+    "tipo": "HERO",
+    "dom": "INT",
+    "emoji": "🐲",
+    "arte": true,
+    "stats": {
+      "ATA": 64,
+      "DEF": 65,
+      "FOR": 52,
+      "VEL": 59,
+      "ENE": 99,
+      "VID": 68
+    },
+    "habilidades": []
+  },
+  {
+    "id": "siberian",
+    "base": "siberian",
+    "nome": "Siberian",
+    "variante": "Padrão",
+    "raridade": "raro",
+    "tipo": "HERO",
+    "dom": "DEF",
+    "emoji": "🐅",
+    "arte": true,
+    "stats": {
+      "ATA": 70,
+      "DEF": 89,
+      "FOR": 58,
+      "VEL": 59,
+      "ENE": 64,
+      "VID": 84
+    },
+    "habilidades": []
+  },
+  {
+    "id": "rison-egito",
+    "base": "rison",
+    "nome": "Rison do Egito",
+    "variante": "Padrão",
+    "raridade": "raro",
+    "tipo": "SUPP",
+    "dom": "DEF",
+    "emoji": "🏺",
+    "arte": true,
+    "stats": {
+      "ATA": 64,
+      "DEF": 89,
+      "FOR": 52,
+      "VEL": 53,
+      "ENE": 70,
+      "VID": 84
+    },
+    "habilidades": []
+  },
+  {
+    "id": "guardiao-saturno",
+    "base": "guardiao-saturno",
+    "nome": "Guardião de Saturno",
+    "variante": "Padrão",
+    "raridade": "epico",
+    "tipo": "HERO",
+    "dom": "DEF",
+    "emoji": "🪐",
+    "arte": true,
+    "stats": {
+      "ATA": 70,
+      "DEF": 95,
+      "FOR": 58,
+      "VEL": 53,
+      "ENE": 70,
+      "VID": 88
+    },
+    "habilidades": []
+  },
+  {
+    "id": "adamian",
+    "base": "adamian",
+    "nome": "Adamian",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "andromeda",
+    "base": "andromeda",
+    "nome": "Andromeda",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "aquariana",
+    "base": "aquariana",
+    "nome": "Aquariana",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "gatico",
+    "base": "gatico",
+    "nome": "Gatico",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "podre",
+    "base": "podre",
+    "nome": "Podre",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "potira",
+    "base": "potira",
+    "nome": "Potira",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "rei-macaco",
+    "base": "rei-macaco",
+    "nome": "Rei Macaco",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "robbit-cosmos",
+    "base": "robbit-cosmos",
+    "nome": "Robbit Cosmos",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "rufus",
+    "base": "rufus",
+    "nome": "Rufus",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "soldado-negro",
+    "base": "soldado-negro",
+    "nome": "Soldado Negro",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  },
+  {
+    "id": "tentaculous",
+    "base": "tentaculous",
+    "nome": "Tentaculous",
+    "variante": "Padrão",
+    "raridade": "comum",
+    "tipo": "HERO",
+    "dom": "FOR",
+    "emoji": "🃏",
+    "arte": true,
+    "stats": {
+      "ATA": 60,
+      "DEF": 55,
+      "FOR": 55,
+      "VEL": 60,
+      "ENE": 55,
+      "VID": 70
+    },
+    "habilidades": []
+  }
+]

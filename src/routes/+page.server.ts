@@ -22,8 +22,11 @@ export const load: PageServerLoad = async ({ locals: { supabase, user } }) => {
 	let owned: string[] = (pcs ?? []).map((r) => r.card_id);
 
 	if (owned.length === 0) {
-		// semeia CARTAS_INICIAIS cartas aleatórias do catálogo
-		const pool = Cards.todas().map((c) => c.id);
+		// semeia CARTAS_INICIAIS cartas aleatórias — o pool vem da tabela `cards`
+		// (fonte da verdade online), p/ não referenciar id que ainda não foi
+		// sincronizado (evita violar a FK de player_cards). Fallback: seed local.
+		const { data: catalogo } = await supabase.from('cards').select('id').eq('ativa', true);
+		const pool = (catalogo && catalogo.length ? catalogo.map((r) => r.id) : Cards.todas().map((c) => c.id));
 		const escolhidas: string[] = [];
 		for (let i = 0; i < CARTAS_INICIAIS && pool.length; i++) {
 			escolhidas.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
