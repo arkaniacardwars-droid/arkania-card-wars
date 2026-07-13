@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
-import type { Handle } from '@sveltejs/kit';
+import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
@@ -45,4 +45,21 @@ const supabase: Handle = async ({ event, resolve }) => {
 	});
 };
 
-export const handle: Handle = sequence(supabase);
+/**
+ * Guard de autenticação: login é OBRIGATÓRIO. Sem sessão → manda pro /login;
+ * já logado tentando abrir /login → manda pro jogo. Stasha session/user em
+ * locals p/ os loads reusarem sem re-bater no Auth.
+ */
+const authGuard: Handle = async ({ event, resolve }) => {
+	const { session, user } = await event.locals.safeGetSession();
+	event.locals.session = session;
+	event.locals.user = user;
+
+	const rotaPublica = event.url.pathname === '/login';
+	if (!user && !rotaPublica) redirect(303, '/login');
+	if (user && rotaPublica) redirect(303, '/');
+
+	return resolve(event);
+};
+
+export const handle: Handle = sequence(supabase, authGuard);

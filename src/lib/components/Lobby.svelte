@@ -13,7 +13,7 @@
 	import Carta from './Carta.svelte';
 	import Avatar from './Avatar.svelte';
 
-	let { onAbrirDeck, onStart } = $props();
+	let { onAbrirDeck, onStart, onLogout, nome = undefined } = $props();
 
 	// ---- palco central: carrossel (conveyor) das cartas do DECK ativo ----
 	const FALLBACK = ['guardiao-saturno', 'mago-negro', 'kassandra'];
@@ -355,7 +355,7 @@
 	>
 		<div class="lb-perfil-av"><Avatar foto={perfilStore.foto} /></div>
 		<div class="lb-perfil-info">
-			<div class="lb-perfil-nome">{perfilStore.nome} <span class="nv">Nv.7</span></div>
+			<div class="lb-perfil-nome">{nome ?? perfilStore.nome} <span class="nv">Nv.7</span></div>
 			<div class="lb-perfil-xp"><i></i></div>
 			<div class="lb-perfil-xp-txt">1 240 / 2 000 XP</div>
 		</div>
@@ -367,6 +367,10 @@
 		<span class="lb-rec"><span class="ic">💎</span><b>0</b></span>
 		<button class="lb-rec-add" title="Comprar">+</button>
 	</div>
+
+	{#if onLogout}
+		<button class="lb-sair" title="Sair da conta" onclick={() => onLogout()}>⎋ Sair</button>
+	{/if}
 
 	<!-- lateral-dir: Deck / Conquistas / Missões / Loja -->
 	<div class="lb-menu-lat">
@@ -414,3 +418,28 @@
 		</span>
 	</button>
 </section>
+
+<style>
+	/* botão de sair da conta — canto superior direito, abaixo dos recursos */
+	.lb-sair {
+		position: absolute;
+		z-index: 2;
+		top: 66px;
+		right: 22px;
+		font-family: var(--serifa);
+		font-size: 12px;
+		letter-spacing: 0.5px;
+		color: var(--texto-suave);
+		background: rgba(10, 7, 4, 0.55);
+		border: 1px solid var(--ouro-esc);
+		border-radius: 10px;
+		padding: 5px 12px;
+		cursor: pointer;
+		backdrop-filter: blur(4px);
+		transition: border-color 0.15s, color 0.15s;
+	}
+	.lb-sair:hover {
+		border-color: var(--ouro);
+		color: var(--texto);
+	}
+</style>

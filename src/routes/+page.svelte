@@ -1,4 +1,5 @@
 <script>
+	import { goto, invalidate } from '$app/navigation';
 	import Lobby from '$lib/components/Lobby.svelte';
 	import DeckBuilder from '$lib/components/DeckBuilder.svelte';
 	import Duelo from '$lib/components/Duelo.svelte';
@@ -6,8 +7,16 @@
 	import PerfilModal from '$lib/components/PerfilModal.svelte';
 	import { ui } from '$lib/game/ui.svelte.js';
 
+	let { data } = $props();
+
 	// navegação entre telas (SPA, como no protótipo): 'lobby' | 'colecao' | 'duelo'
 	let view = $state('lobby');
+
+	async function sair() {
+		await data.supabase.auth.signOut();
+		await invalidate('supabase:auth');
+		await goto('/login');
+	}
 </script>
 
 <svelte:head>
@@ -15,7 +24,12 @@
 </svelte:head>
 
 {#if view === 'lobby'}
-	<Lobby onAbrirDeck={() => (view = 'colecao')} onStart={() => (view = 'duelo')} />
+	<Lobby
+		nome={data.profile?.username}
+		onAbrirDeck={() => (view = 'colecao')}
+		onStart={() => (view = 'duelo')}
+		onLogout={sair}
+	/>
 {:else if view === 'colecao'}
 	<DeckBuilder onVoltar={() => (view = 'lobby')} />
 {:else}
